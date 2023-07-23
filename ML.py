@@ -3,6 +3,10 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import mean_squared_error
+import logging
+
+# Configuring logging
+logging.basicConfig(filename='etl_ml_log.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Implement machine learning
 # Load transformed data from Snowflake to pandas DataFrame
@@ -10,6 +14,7 @@ from sklearn.metrics import mean_squared_error
 snowflake_connection_string = 'your_snowflake_connection_string'
 query = 'SELECT feature1, feature2, target_column FROM ml_training_data_table'
 df = pd.read_sql_query(query, snowflake_connection_string)
+logging.info("Data extraction completed.")
 
 # Separate features and target variable
 X = df[['feature1', 'feature2']]
@@ -21,6 +26,8 @@ X_poly = poly.fit_transform(X)
 
 # Split data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X_poly, y, test_size=0.2, random_state=42)
+logging.info("Data transformation completed.")
+
 
 # Using GridSearchCV to find the best hyperparameters
 param_grid = {'fit_intercept': [True, False]}
@@ -45,3 +52,5 @@ mse = mean_squared_error(y_test, y_pred)
 print("Best Model Coefficients:", best_model.coef_)
 print("Best Model Intercept:", best_model.intercept_)
 print("Best Model Mean Squared Error:", mse)
+logging.info("Machine learning model trained.")
+
